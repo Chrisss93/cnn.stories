@@ -1,0 +1,36 @@
+Package: cnn.stories
+Type: Package
+Title: Utilities for CNN-stories project
+Version: 0.1.0
+Author: Chris Lee
+Maintainer: <chrissslee93@gmail.com>
+Description: HTML scraping, database access and NLP functions for cnn articles
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Collate: 
+    'app2.R'
+    'database.R'
+    'iterator.R'
+    'embeddings.R'
+    'imports.R'
+    'scrapeUtilities.R'
+    'topic_app.R'
+    'topics.R'
+Imports:
+    text2vec,
+    dplyr,
+    rvest,
+    Matrix,
+    RMySQL,
+    tibble,
+    plyr,
+    data.table,
+    rmongodb
+Suggests:
+    Rcpp,
+    doParallel
+Remotes:
+    git::https://github.com/dselivanov/text2vec.git
+    git::https://github.com/dselivanov/rmongodb.git
+RoxygenNote: 6.0.1
