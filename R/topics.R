@@ -50,7 +50,6 @@ distributeTopics <- function(articles, mongo) {
 	
 	all_text  <- sapply(articles, function(x) { paste(x$title, x$subtitle, x$summary, x$content, collapse = " ") })
 	names(all_text) <- sapply(articles, "[[", "url")
-	STOPWORDS <- readRDS("stopwords.rds")
 	it        <- itoken(all_text, removePunctuation)
 	it_class  <- class(it)
 	# Add model collocations to articles
@@ -58,7 +57,7 @@ distributeTopics <- function(articles, mongo) {
 			text2vec:::collapse_collocations_cpp(y$tokens, text2vec:::create_xptr_unordered_set(collocations), "_")	
 	})
 	setattr(it, "class", c("itoken", class(it)))
-	dtm           <- create_dtm(it, vocab_vectorizer(create_vocabulary(it, stopwords = STOPWORDS)), "dgCMatrix")
+	dtm           <- create_dtm(it, vocab_vectorizer(create_vocabulary(it, stopwords = stopwords)), "dgCMatrix")
 	missing_terms <- setdiff(model_words, colnames(dtm))
 
 	m   <- Matrix(0, nrow = nrow(dtm), ncol = length(missing_terms), 

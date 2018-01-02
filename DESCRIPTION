@@ -9,13 +9,11 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 Collate: 
-    'app2.R'
     'database.R'
     'iterator.R'
     'embeddings.R'
     'imports.R'
     'scrapeUtilities.R'
-    'topic_app.R'
     'topics.R'
 Imports:
     text2vec,

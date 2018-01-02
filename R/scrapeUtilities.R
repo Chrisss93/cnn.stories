@@ -74,7 +74,6 @@ parseLocations <- function(articles) {
 	locations       <- adply(dtm, 1, function(x) { data_frame(Freq = x[x>0], Keywords = names(x[x>0])) }, .id = "url") %>%
 		left_join(location_key, "Keywords") %>%
 		dlply("url", findCenter)
-	# Change code below now that we are using mongo 2dsphere index to store geo-info, instead of regular fields
 	no_key_url      <- setdiff(names(articles), names(locations))
 	no_key_list     <- rep(list(list(lat = NA, lon = NA, center = NA)), length(no_key_url)) %>% setNames(no_key_url)
 	locations       <- append(locations, no_key_list)[names(articles)]
@@ -98,7 +97,10 @@ findCenter <- function(locs) {
 		center <- filter(locs, Parent == center$Location) %>% filter(pop == max(pop)) %>% head(1)
 	}
 	# popup <- a(href = center$url, paste0(strong(center$title), br(), center$summary)) %>% as.character()
-	center_output <- list(lat = center$lat, lon = center$lon, center = center$Location)
+	center_output <- list(center = center$Location, 
+		# In the structure required for mongoDB's 2dsphere index. 
+		location = list(type = "Point", coordinates = c(center$lon, center$lat))
+	)
 	return(center_output)
 }
 
