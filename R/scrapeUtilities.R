@@ -61,7 +61,7 @@ scrapeArticle <- function(dta) {
 #' @export
 parseLocations <- function(articles) {
 	location_key$Keywords <- location_key$Keywords %>%
-		tolower() %>% 
+		tolower() %>%
 		gsub("(?!-)[[:punct:]]+", "", ., perl = TRUE) %>%
 		gsub(" ", "_", ., perl = TRUE)
 	names(articles) <- sapply(articles, "[[", "url")
@@ -75,7 +75,10 @@ parseLocations <- function(articles) {
 		left_join(location_key, "Keywords") %>%
 		dlply("url", findCenter)
 	no_key_url      <- setdiff(names(articles), names(locations))
-	no_key_list     <- rep(list(list(lat = NA, lon = NA, center = NA)), length(no_key_url)) %>% setNames(no_key_url)
+	no_key_list     <- list(center = NA, location = list(type = "Point", coordinates = c(0, 0))) %>% 
+		list() %>% 
+		rep(length(no_key_url)) %>% 
+		setNames(no_key_url)
 	locations       <- append(locations, no_key_list)[names(articles)]
 
 	stopifnot(all.equal(names(articles), names(locations)))
@@ -97,8 +100,8 @@ findCenter <- function(locs) {
 		center <- filter(locs, Parent == center$Location) %>% filter(pop == max(pop)) %>% head(1)
 	}
 	# popup <- a(href = center$url, paste0(strong(center$title), br(), center$summary)) %>% as.character()
-	center_output <- list(center = center$Location, 
-		# In the structure required for mongoDB's 2dsphere index. 
+	center_output <- list(center = center$Location,
+		# In the structure required for mongoDB's 2dsphere index.
 		location = list(type = "Point", coordinates = c(center$lon, center$lat))
 	)
 	return(center_output)
@@ -110,7 +113,7 @@ centerTieBreak <- function(centers, locs) {
 		centers <- filter(locs, Parent %in% centers$Location) %>% filter(Freq == max(Freq))
 		if (nrow(centers) == 0) {
 			message("Ambiguous location for article: ", first(locs$url))
-			return(data.frame(Location = NA, lon = NA, lat = NA))
+			return(data.frame(Location = NA, lon = 0, lat = 0))
 		} else {
 			centers <- cityTieBreak(centers, locs)
 		}
